@@ -29,7 +29,8 @@ async function sb(path, opt = {}) {
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).end();
-  if (!U || !K || !APP_PIN || !SEC) return res.status(500).json({ error: "Server env vars missing" });
+  const missing = [["SUPABASE_URL", U], ["SUPABASE_SERVICE_KEY", K], ["APP_PIN", APP_PIN], ["SESSION_SECRET", SEC]].filter((x) => !x[1]).map((x) => x[0]);
+  if (missing.length) return res.status(500).json({ error: "Missing env vars: " + missing.join(", ") });
   const b = req.body || {};
   try {
     if (b.action === "login") {
