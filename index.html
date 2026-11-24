@@ -183,7 +183,7 @@ $("pad").addEventListener("click",async function(e){
  dots();$("lmsg").textContent="";
  if(S.pin.length===PIN_LEN){
   try{await api("login",{pin:S.pin});await boot()}
-  catch(err){S.pin="";dots();$("lmsg").textContent=err.offline?"لاگ اِن کے لیے انٹرنیٹ درکار ہے":err.status===429?"کچھ دیر بعد کوشش کریں":"غلط پن";$("dots").classList.remove("shake");void $("dots").offsetWidth;$("dots").classList.add("shake")}
+  catch(err){S.pin="";dots();$("lmsg").textContent=err.offline?"لاگ اِن کے لیے انٹرنیٹ درکار ہے":err.status>=500?"سرور: "+String(err.message).slice(0,80):err.status===429?"کچھ دیر بعد کوشش کریں":"غلط پن";$("dots").classList.remove("shake");void $("dots").offsetWidth;$("dots").classList.add("shake")}
  }
 });
 $("logout").onclick=async function(){try{await api("logout")}catch(e){}showLogin()};
@@ -210,7 +210,7 @@ async function boot(){
  try{sh=await api("shops");DB.seen=true}
  catch(e){
   if(e.message==="auth")return;
-  if(!e.offline){toast("سرور میں خرابی");return}
+  if(!e.offline){toast("سرور میں خرابی: "+String(e.message).slice(0,120));return}
   if(!DB.seen){showLogin();$("lmsg").textContent="پہلی بار انٹرنیٹ درکار ہے";return}
  }
  $("login").hidden=true;$("app").hidden=false;

@@ -1,5 +1,5 @@
 // Offline app shell: serve from cache, refresh in background. API calls are never cached.
-const V = "ma-v1";
+const V = "ma-v2";
 const SHELL = [
   "/", "/index.html", "/manifest.webmanifest", "/icon-192.png", "/icon-512.png",
   "https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js",
@@ -13,11 +13,13 @@ self.addEventListener("activate", (e) => {
   e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== V).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
 });
 self.addEventListener("fetch", (e) => {
-  const r = e.request, u = new URL(r.url);
-  if (r.method !== "GET" || u.pathname.startsWith("/api/")) return;
+  const r = e.request;
+  let u; try { u = new URL(r.url); } catch (_) { return; }
+  // ignore browser-extension / non-http requests and the API
+  if (r.method !== "GET" || !/^https?:$/.test(u.protocol) || u.pathname.startsWith("/api/")) return;
   e.respondWith(caches.open(V).then(async (c) => {
     const hit = await c.match(r);
-    const net = fetch(r).then((res) => { if (res.ok || res.type === "opaque") c.put(r, res.clone()); return res; }).catch(() => null);
+    const net = fetch(r).then((res) => { if (res.ok || res.type === "opaque") c.put(r, res.clone()).catch(() => {}); return res; }).catch(() => null);
     if (hit) { e.waitUntil(net); return hit; }
     return (await net) || (r.mode === "navigate" ? c.match("/index.html") : Response.error());
   }));

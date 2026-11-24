@@ -1,6 +1,7 @@
 // Single serverless endpoint. The Supabase service key never reaches the browser.
 const crypto = require("crypto");
-const { SUPABASE_URL: U, SUPABASE_SERVICE_KEY: K, APP_PIN, SESSION_SECRET: SEC } = process.env;
+const { SUPABASE_SERVICE_KEY: K, APP_PIN, SESSION_SECRET: SEC } = process.env;
+const U = (process.env.SUPABASE_URL || "").trim().replace(/\/rest\/v1\/?$/, "").replace(/\/+$/, "");
 
 const sign = (t) => crypto.createHmac("sha256", SEC).update(String(t)).digest("hex");
 const enc = encodeURIComponent;
