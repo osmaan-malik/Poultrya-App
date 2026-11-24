@@ -1,7 +1,8 @@
 // Offline app shell: serve from cache, refresh in background. API calls are never cached.
-const V = "ma-v2";
+const V = "ma-v3";
 const SHELL = [
-  "/", "/index.html", "/manifest.webmanifest", "/icon-192.png", "/icon-512.png",
+  "/", "/index.html", "/manifest.webmanifest", "/icon-192.png", "/icon-512.png", "/logo.png", "/emblem.png",
+  "https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js",
   "https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",

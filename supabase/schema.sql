@@ -31,3 +31,9 @@ create view shop_balances with (security_invoker = true) as
 select s.*, s.opening + coalesce(sum(b.amount - b.recv), 0) as balance
 from shops s left join bills b on b.shop_id = s.id
 group by s.id;
+
+-- Explicit privileges: only the server's service_role may touch these objects.
+grant usage on schema public to service_role;
+grant select, insert, update, delete on shops, bills to service_role;
+grant select on shop_balances to service_role;
+revoke all on shops, bills, shop_balances from anon, authenticated;
